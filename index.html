@@ -139,6 +139,26 @@
     /* Accessibilité: réduit les animations si l’utilisateur le demande */
     @media (prefers-reduced-motion: reduce) {
       * { transition: none !important; animation: none !important; }
+
+      /* === Rectangle blanc uniquement sur mobile === */
+    @media (max-width: 768px) {
+    .entete-formulaire {
+    background: rgba(255, 255, 255, 0.9);
+    padding: 25px 15px;
+    margin: 0 auto 25px auto;
+    border-radius: 15px;
+    max-width: 92vw;
+    box-shadow: 0 0 12px rgba(0,0,0,0.15);
+    backdrop-filter: blur(3px);
+  }
+
+  .entete-formulaire h2,
+  .entete-formulaire .date,
+  .entete-formulaire .deadline {
+    margin: 0 0 8px 0;
+  }
+}
+
     }
   </style>
 </head>
@@ -152,7 +172,7 @@
   </div>
 
   <!-- SECTION 2 : Formulaire -->
-  <div id="section2" class="section">
+  <div class="entete-formulaire">
     <h2>RÉPONSE À L'INVITATION DE MARIAGE</h2>
     <p class="date">23 AOÛT 2026</p>
     <p class="deadline">Merci de répondre avant le <u>30 avril 2026</u></p>
@@ -299,3 +319,4 @@
   </script>
 </body>
 </html>
+
