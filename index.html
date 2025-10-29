@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>RSVP Mariage</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/css2?family=Prata&display=swap" rel="stylesheet">
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+
+    html { overflow-y: scroll; } /* évite l’apparition/disparition = plus de “bougé” */
+
+    body {
+      background: url('fond.jpg') no-repeat center center / cover fixed;
+      background-size: cover;
+      font-family: 'Century Gothic', 'Arial', sans-serif;
+      color: #000;
+      text-align: center;
+      padding: 40px 20px;
+      min-height: 100vh;
+      font-family: 'Prata', serif;
+    }
+
+    h2 {
+      font-size: 1.9em;
+      font-family: 'Prata', serif;
+      margin-bottom: 10px;
+    }
+
+    .date { font-size: 1.4em; color: #9b9b9b; margin-bottom: 5px; }
+    .deadline { font-size: 1.2em; margin-bottom: 25px; }
+
+    form {
+      max-width: 500px;
+      margin: auto;
+      background: rgba(255, 255, 255, 0.85);
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.1);
+    }
+
+    label { display: block; margin-top: 20px; font-size: 1.1em; }
+
+    input, select {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      border: 2px solid #9b9b9b;
+      background: transparent;
+      font-family: 'Century Gothic', 'Arial', sans-serif;
+      font-size: 1em;
+      border-radius: 8px;
+    }
+
+    button {
+      margin-top: 30px;
+      padding: 10px 20px;
+      border: 2px solid #9b9b9b;
+      font-size: 1.1em;
+      font-family: 'Century Gothic', 'Arial', sans-serif;
+      cursor: pointer;
+      border-radius: 8px;
+    }
+
+    button:hover { background: #f0f0f0; }
+
+    #invites_section {
+      display: none;
+      opacity: 0;
+      transition: opacity 0.5s ease;
+    }
+    #invites_section.visible { display: block; opacity: 1; }
+
+    #champs_invites input {
+      margin-top: 10px;
+      border: 2px solid #9b9b9b;
+      width: 100%;
+      font-family: 'Century Gothic', 'Arial', sans-serif;
+      font-size: 1em;
+      padding: 10px;
+      box-sizing: border-box;
+      border-radius: 8px;
+    }
+
+    .section { display: none; transition: opacity 0.5s ease; }
+    .section.active { display: block; opacity: 1; }
+
+    #fairepart {
+      max-width: 500px;
+      width: 100%;
+      margin: auto;
+      box-shadow: 0 0 15px rgba(0,0,0,0.2);
+    }
+
+    label[for='personnesupp'] { transition: opacity 0.3s ease; }
+  </style>
+</head>
+<body>
+
+  <!-- SECTION 1 : Faire-part -->
+  <div id="section1" class="section active">
+    <img id="fairepart" src="INVITATIONSALLE.jpeg" alt="Faire-part de mariage">
+    <!-- <iframe src="fairepart.pdf" width="100%" height="600px"></iframe> -->
+    <br>
+    <button onclick="afficherFormulaire()">Suivant</button>
+  </div>
+
+  <!-- SECTION 2 : Formulaire -->
+  <div id="section2" class="section">
+    <h1> </h1>
+    <h2> </h2>
+    <h2>RÉPONSE À L'INVITATION DE MARIAGE</h2>
+    <p class="date">23 AOÛT 2026</p>
+    <p class="deadline">Merci de répondre avant le <u>30 avril 2026</u></p>
+
+    <form>
+      <label for="nom">Nom et prénom</label>
+      <input type="text" name="nom" required>
+
+      <label for="presence">Seras-tu présent ?</label>
+      <select name="presence" id="presence" required onchange="verifierPresence()">
+        <option value="" selected>-- Sélectionner --</option>
+        <option value="oui">Oui</option>
+        <option value="non">Non</option>
+      </select>
+
+      <div id="invites_section">
+        <label for="nb_personnes">Nombre total de personnes</label>
+        <input type="number" id="nb_personnes" name="nb_personnes" min="1" max="8" onchange="genererChampsInvites()">
+
+        <label for="personnesupp">Nom et prénom des invités</label>
+        <div id="champs_invites"></div>
+      </div>
+
+      <!-- Honeypot anti-bots (caché) -->
+      <input type="text" id="website_url" name="website_url" style="position:absolute;left:-99999px;opacity:0;" tabindex="-1" autocomplete="off">
+
+      <button type="submit">Envoyer</button>
+    </form>
+  </div>
+
+<script>
+  // === À REMPLACER (2 lignes) ===
+  const APPSCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzWTN4JheY8lwzmvVjs0hkp2GoVC8B9VxGfUD51moTcU-c6q8vtITOKknjgcamHRy58/exec'; // ex: https://script.google.com/macros/s/xxxx/exec
+  const TOKEN_SECRET = 'rsvp-mariage-cm'; // le même que dans ton Apps Script
+
+  function afficherFormulaire() {
+    document.getElementById("section1").classList.remove("active");
+    document.getElementById("section2").classList.add("active");
+  }
+
+  function verifierPresence() {
+    const presence = document.getElementById("presence").value;
+    const invitesSection = document.getElementById("invites_section");
+
+    if (presence === "oui") {
+      invitesSection.style.display = "block";
+      setTimeout(() => { invitesSection.classList.add("visible"); }, 10);
+      genererChampsInvites();
+    } else {
+      invitesSection.classList.remove("visible");
+      setTimeout(() => { invitesSection.style.display = "none"; }, 300);
+    }
+  }
+
+  function genererChampsInvites() {
+    const container = document.getElementById("champs_invites");
+    const labelInvites = document.querySelector("label[for='personnesupp']");
+    const nombre = parseInt(document.getElementById("nb_personnes").value);
+
+    container.innerHTML = "";
+
+    if (!isNaN(nombre) && nombre > 1) {
+      labelInvites.style.display = "block";
+      for (let i = 1; i < nombre; i++) {
+        const input = document.createElement("input");
+        input.type = "text";
+        input.name = `invite_${i}`;
+        input.placeholder = `Nom et prénom de l'invité ${i}`;
+        input.required = true;
+        input.style.opacity = "0";
+        input.style.transition = "opacity 0.5s ease";
+        container.appendChild(input);
+        setTimeout(() => { input.style.opacity = "1"; }, 50 * i);
+      }
+    } else {
+      labelInvites.style.display = "none";
+    }
+  }
+
+  // Réinitialisation automatique au chargement
+  window.onload = function () {
+    const form = document.querySelector("form");
+    const labelInvites = document.querySelector("label[for='personnesupp']");
+    const container = document.getElementById("champs_invites");
+    const invitesSection = document.getElementById("invites_section");
+
+    form.reset();
+    labelInvites.style.display = "none";
+    container.innerHTML = "";
+    invitesSection.classList.remove("visible");
+    invitesSection.style.display = "none";
+  };
+
+  // === Soumission vers Google Apps Script (100% gratuit) ===
+  document.querySelector("form").addEventListener("submit", async function(e) {
+    e.preventDefault(); // on garde la main
+
+    const nom = document.querySelector("input[name='nom']").value.trim();
+    const presence = document.getElementById("presence").value;
+    const nombre = parseInt(document.getElementById("nb_personnes").value) || 1;
+
+    // honeypot anti-bots : si rempli, on ignore
+    const honey = document.getElementById("website_url")?.value || '';
+    if (honey !== '') return;
+
+    const data = {
+      nom,
+      presence,
+      nb_personnes: presence === 'oui' ? nombre : 0,
+      invites: [],
+      token: TOKEN_SECRET
+    };
+
+    if (presence === "oui" && nombre > 1) {
+      const champs = document.querySelectorAll("#champs_invites input");
+      champs.forEach((champ) => data.invites.push((champ.value || '').trim()));
+    }
+
+    const btn = document.querySelector("button[type='submit']");
+    btn.disabled = true;
+
+    try {
+      // on envoie en x-www-form-urlencoded (champ unique "payload") → pas de préflight CORS
+      const body = new URLSearchParams({ payload: JSON.stringify(data) });
+
+      const res = await fetch(APPSCRIPT_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8" },
+        body
+      });
+
+      let json;
+      try { json = await res.json(); }
+      catch (e) { throw new Error('Réponse invalide du serveur'); }
+      
+      if (!json.ok) {
+        throw new Error(json.error || 'Erreur inconnue');
+      }
+
+
+      // message de confirmation
+      let message = "";
+      if (presence === "oui") {
+        message = (nombre > 1)
+          ? "🎉 Merci pour votre réponse !\nNous vous attendons avec impatience pour célébrer ce jour ✨"
+          : "🎉 Merci pour ta réponse !\nNous t'attendons avec impatience pour célébrer ce jour ✨";
+      } else if (presence === "non") {
+        message = "Merci pour ta réponse !\nNous sommes navrés de ne pas te compter parmi nous en ce jour";
+      } else {
+        message = "Merci pour ta réponse !";
+      }
+      alert(message);
+
+      // reset visuel
+      const form = document.querySelector("form");
+      const labelInvites = document.querySelector("label[for='personnesupp']");
+      const container = document.getElementById("champs_invites");
+      const invitesSection = document.getElementById("invites_section");
+
+      form.reset();
+      labelInvites.style.display = "none";
+      container.innerHTML = "";
+      invitesSection.classList.remove("visible");
+      invitesSection.style.display = "none";
+    } catch (err) {
+      console.error(err);
+      alert("Une erreur est survenue lors de l’enregistrement 🛑\n" + err.message);
+    } finally {
+      btn.disabled = false;
+    }
+  });
+</script>
+
+</body>
+</html>
