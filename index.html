@@ -23,7 +23,6 @@
 
     h2 {
       font-size: 1.9em;
-      font-family: 'Prata', serif;
       margin-bottom: 10px;
     }
 
@@ -71,7 +70,6 @@
       margin-top: 10px;
       border: 2px solid #9b9b9b;
       width: 100%;
-      font-family: 'Century Gothic','Arial',sans-serif;
       font-size: 1em;
       padding: 10px;
       border-radius: 8px;
@@ -88,16 +86,12 @@
       box-shadow: 0 0 15px rgba(0,0,0,0.2);
     }
 
-    label[for='personnesupp'] { transition: opacity .3s ease; }
-
-    /* ===========================
-       VERSION TÉLÉPHONE (mobile)
-       =========================== */
+    /* VERSION TÉLÉPHONE (mobile) */
     @media (max-width: 768px) {
       body {
         /* Fond mobile + on enlève 'fixed' (buggy sur iOS) */
         background: url("fond tel.jpg") no-repeat center top / cover;
-        padding: 20px 14px;            /* moins de marge */
+        padding: 20px 14px;
       }
 
       h2 { font-size: 1.4em; margin-bottom: 8px; }
@@ -105,7 +99,7 @@
       .deadline { font-size: 1em; margin-bottom: 18px; }
 
       form {
-        max-width: 92vw;               /* occupe mieux l’écran */
+        max-width: 92vw;
         padding: 18px;
         border-radius: 12px;
         backdrop-filter: blur(2px);
@@ -114,51 +108,38 @@
       label { margin-top: 14px; font-size: 1em; }
 
       input, select {
-        padding: 12px;                 /* zone tactile plus grande */
+        padding: 12px;
         font-size: 1rem;
       }
 
       button {
-        width: 100%;                   /* bouton large */
+        width: 100%;
         padding: 14px;
         font-size: 1rem;
       }
 
-      #fairepart {
-        max-width: 92vw;
-        /* garde le ratio automatiquement avec height:auto */
-      }
-    }
+      #fairepart { max-width: 92vw; }
 
-    /* Ultra-petit (vieux iPhone SE, etc.) */
-    @media (max-width: 360px) {
-      h2 { font-size: 1.25em; }
-      .date, .deadline { font-size: .95em; }
+      /* Rectangle blanc uniquement sur mobile */
+      .entete-formulaire {
+        background: rgba(255, 255, 255, 0.9);
+        padding: 25px 15px;
+        margin: 0 auto 25px auto;
+        border-radius: 15px;
+        max-width: 92vw;
+        box-shadow: 0 0 12px rgba(0,0,0,0.15);
+        backdrop-filter: blur(3px);
+      }
+      .entete-formulaire h2,
+      .entete-formulaire .date,
+      .entete-formulaire .deadline {
+        margin: 0 0 8px 0;
+      }
     }
 
     /* Accessibilité: réduit les animations si l’utilisateur le demande */
     @media (prefers-reduced-motion: reduce) {
       * { transition: none !important; animation: none !important; }
-
-      /* === Rectangle blanc uniquement sur mobile === */
-   
-  }
-}
- @media (max-width: 768px) {
-    .entete-formulaire {
-    background: rgba(255, 255, 255, 0.9);
-    padding: 25px 15px;
-    margin: 0 auto 25px auto;
-    border-radius: 15px;
-    max-width: 92vw;
-    box-shadow: 0 0 12px rgba(0,0,0,0.15);
-    backdrop-filter: blur(3px);
-  }
-
-  .entete-formulaire h2,
-  .entete-formulaire .date,
-  .entete-formulaire .deadline {
-    margin: 0 0 8px 0;
     }
   </style>
 </head>
@@ -172,10 +153,13 @@
   </div>
 
   <!-- SECTION 2 : Formulaire -->
-  <div class="entete-formulaire">
-    <h2>RÉPONSE À L'INVITATION DE MARIAGE</h2>
-    <p class="date">23 AOÛT 2026</p>
-    <p class="deadline">Merci de répondre avant le <u>30 avril 2026</u></p>
+  <div id="section2" class="section">
+    <!-- Bloc entête (uniquement entouré en mobile) -->
+    <div class="entete-formulaire">
+      <h2>RÉPONSE À L'INVITATION DE MARIAGE</h2>
+      <p class="date">23 AOÛT 2026</p>
+      <p class="deadline">Merci de répondre avant le <u>30 avril 2026</u></p>
+    </div>
 
     <form>
       <label for="nom">Nom et prénom</label>
@@ -319,5 +303,3 @@
   </script>
 </body>
 </html>
-
-
